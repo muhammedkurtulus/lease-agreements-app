@@ -1,1 +1,1 @@
-# MuhammedKurtulus-Bootcamp-FinalCase
+Paribu Hub - Smart Contract & Solidity Bootcamp
