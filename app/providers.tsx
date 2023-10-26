@@ -2,7 +2,6 @@
 
 import { ConnectKitProvider } from "connectkit";
 import { WagmiConfig } from "wagmi";
-
 import { config } from "../utils/wagmi";
 import { ReactNode, useEffect, useState } from "react";
 

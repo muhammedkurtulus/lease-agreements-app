@@ -23,6 +23,31 @@ import type {
   TypedContractMethod,
 } from "./common";
 
+export type ComplaintStruct = {
+  complainant: AddressLike;
+  whoAbout: AddressLike;
+  complaintIndex: BigNumberish;
+  propertyIndex: BigNumberish;
+  description: string;
+  confirmed: BigNumberish;
+};
+
+export type ComplaintStructOutput = [
+  complainant: string,
+  whoAbout: string,
+  complaintIndex: bigint,
+  propertyIndex: bigint,
+  description: string,
+  confirmed: bigint
+] & {
+  complainant: string;
+  whoAbout: string;
+  complaintIndex: bigint;
+  propertyIndex: bigint;
+  description: string;
+  confirmed: bigint;
+};
+
 export type LeaseInfoStruct = {
   tenantAddress: AddressLike;
   tenantName: string;
@@ -89,8 +114,11 @@ export interface LeaseInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "addProperty"
+      | "allComplaints"
       | "complaints"
+      | "complaintsLength"
       | "confirmTermination"
+      | "getAllComplaints"
       | "getAllProperties"
       | "isManager"
       | "managers"
@@ -120,12 +148,24 @@ export interface LeaseInterface extends Interface {
     values: [string, BigNumberish, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "allComplaints",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "complaints",
-    values: [AddressLike]
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "complaintsLength",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "confirmTermination",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllComplaints",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getAllProperties",
@@ -158,7 +198,7 @@ export interface LeaseInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "reviewComplaint",
-    values: [BigNumberish, AddressLike, boolean]
+    values: [BigNumberish, BigNumberish, AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setManager",
@@ -174,7 +214,7 @@ export interface LeaseInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "submitComplaint",
-    values: [BigNumberish, AddressLike, string]
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "unlistProperty",
@@ -185,9 +225,21 @@ export interface LeaseInterface extends Interface {
     functionFragment: "addProperty",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "allComplaints",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "complaints", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "complaintsLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "confirmTermination",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllComplaints",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -424,12 +476,13 @@ export interface Lease extends BaseContract {
     "nonpayable"
   >;
 
-  complaints: TypedContractMethod<
-    [arg0: AddressLike],
+  allComplaints: TypedContractMethod<
+    [arg0: BigNumberish],
     [
-      [string, string, bigint, string, bigint] & {
+      [string, string, bigint, bigint, string, bigint] & {
         complainant: string;
         whoAbout: string;
+        complaintIndex: bigint;
         propertyIndex: bigint;
         description: string;
         confirmed: bigint;
@@ -438,11 +491,30 @@ export interface Lease extends BaseContract {
     "view"
   >;
 
+  complaints: TypedContractMethod<
+    [arg0: AddressLike, arg1: BigNumberish],
+    [
+      [string, string, bigint, bigint, string, bigint] & {
+        complainant: string;
+        whoAbout: string;
+        complaintIndex: bigint;
+        propertyIndex: bigint;
+        description: string;
+        confirmed: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  complaintsLength: TypedContractMethod<[], [bigint], "view">;
+
   confirmTermination: TypedContractMethod<
     [propertyIndex: BigNumberish],
     [void],
     "nonpayable"
   >;
+
+  getAllComplaints: TypedContractMethod<[], [ComplaintStructOutput[]], "view">;
 
   getAllProperties: TypedContractMethod<
     [],
@@ -499,7 +571,12 @@ export interface Lease extends BaseContract {
   >;
 
   reviewComplaint: TypedContractMethod<
-    [propertyIndex: BigNumberish, whoAbout: AddressLike, confirmation: boolean],
+    [
+      propertyIndex: BigNumberish,
+      complaintIndex: BigNumberish,
+      whoAbout: AddressLike,
+      confirmation: boolean
+    ],
     [void],
     "nonpayable"
   >;
@@ -528,7 +605,7 @@ export interface Lease extends BaseContract {
   >;
 
   submitComplaint: TypedContractMethod<
-    [propertyIndex: BigNumberish, whoAbout: AddressLike, description: string],
+    [propertyIndex: BigNumberish, description: string],
     [void],
     "nonpayable"
   >;
@@ -551,13 +628,14 @@ export interface Lease extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "complaints"
+    nameOrSignature: "allComplaints"
   ): TypedContractMethod<
-    [arg0: AddressLike],
+    [arg0: BigNumberish],
     [
-      [string, string, bigint, string, bigint] & {
+      [string, string, bigint, bigint, string, bigint] & {
         complainant: string;
         whoAbout: string;
+        complaintIndex: bigint;
         propertyIndex: bigint;
         description: string;
         confirmed: bigint;
@@ -566,8 +644,30 @@ export interface Lease extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "complaints"
+  ): TypedContractMethod<
+    [arg0: AddressLike, arg1: BigNumberish],
+    [
+      [string, string, bigint, bigint, string, bigint] & {
+        complainant: string;
+        whoAbout: string;
+        complaintIndex: bigint;
+        propertyIndex: bigint;
+        description: string;
+        confirmed: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "complaintsLength"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "confirmTermination"
   ): TypedContractMethod<[propertyIndex: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "getAllComplaints"
+  ): TypedContractMethod<[], [ComplaintStructOutput[]], "view">;
   getFunction(
     nameOrSignature: "getAllProperties"
   ): TypedContractMethod<[], [PropertyInfoStructOutput[]], "view">;
@@ -621,7 +721,12 @@ export interface Lease extends BaseContract {
   getFunction(
     nameOrSignature: "reviewComplaint"
   ): TypedContractMethod<
-    [propertyIndex: BigNumberish, whoAbout: AddressLike, confirmation: boolean],
+    [
+      propertyIndex: BigNumberish,
+      complaintIndex: BigNumberish,
+      whoAbout: AddressLike,
+      confirmation: boolean
+    ],
     [void],
     "nonpayable"
   >;
@@ -646,7 +751,7 @@ export interface Lease extends BaseContract {
   getFunction(
     nameOrSignature: "submitComplaint"
   ): TypedContractMethod<
-    [propertyIndex: BigNumberish, whoAbout: AddressLike, description: string],
+    [propertyIndex: BigNumberish, description: string],
     [void],
     "nonpayable"
   >;
