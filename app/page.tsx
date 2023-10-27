@@ -1,20 +1,7 @@
 "use client";
 
 import { Lease__factory } from "@/typechain-types";
-import { PropertyInfoStruct } from "@/typechain-types/Lease";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { ConnectKitButton } from "connectkit";
 import { useEffect, useState } from "react";
 import { Address, BaseError } from "viem";
@@ -28,6 +15,7 @@ import {
 export default function Home() {
   const [openPropertyForm, setOpenPropertyForm] = useState(false);
   const [openComplaintForm, setOpenComplaintForm] = useState(false);
+  const [openStartLeaseForm, setOpenStartLeaseForm] = useState(false);
   const [ownProperties, setOwnProperties] = useState<PropertyInfo[]>();
   const [leasedProperties, setLeasedProperties] = useState<PropertyInfo[]>();
   const [propertyIndex, setPropertyIndex] = useState<bigint>();
@@ -54,10 +42,10 @@ export default function Home() {
 
   const {
     write: addProperty,
-    data: propertyData,
-    error: propertyError,
-    isLoading: propertyLoading,
-    isError: propertyIsError,
+    data: addPropertyData,
+    error: addPropertyError,
+    isLoading: addPropertyLoading,
+    isError: addPropertyIsError,
   } = useContractWrite({
     ...contract,
     functionName: "addProperty",
@@ -65,18 +53,63 @@ export default function Home() {
 
   const {
     write: submitComplaint,
-    data: complaintData,
-    error: complaintError,
-    isLoading: complaintLoading,
-    isError: complaintIsError,
+    data: submitComplaintData,
+    error: submitComplaintError,
+    isLoading: submitComplaintLoading,
+    isError: submitComplaintIsError,
   } = useContractWrite({
     ...contract,
     functionName: "submitComplaint",
   });
 
-  const { isLoading: isPending, isSuccess } = useWaitForTransaction({
-    hash: propertyData?.hash,
+  const {
+    write: startLease,
+    data: startLeaseData,
+    error: startLeaseError,
+    isLoading: startLeaseLoading,
+    isError: startLeaseIsError,
+  } = useContractWrite({
+    ...contract,
+    functionName: "startLease",
   });
+
+  const {
+    write: signLease,
+    data: signLeaseData,
+    error: signLeaseError,
+    isLoading: signLeaseLoading,
+    isError: signLeaseIsError,
+  } = useContractWrite({
+    ...contract,
+    functionName: "signLease",
+  });
+
+  const { isLoading: isPending, isSuccess } = useWaitForTransaction({
+    hash: addPropertyData
+      ? addPropertyData?.hash
+      : submitComplaintData
+      ? submitComplaintData?.hash
+      : startLeaseData
+      ? startLeaseData?.hash
+      : signLeaseData?.hash,
+  });
+
+  // const { isLoading: isPendingAddProperty, isSuccess: isSuccessAddProperty } =
+  //   useWaitForTransaction({
+  //     hash: addPropertyData?.hash,
+  //   });
+
+  // const {
+  //   isLoading: isPendingSubmitComplaint,
+  //   isSuccess: isSuccessSubmitComplaint,
+  // } = useWaitForTransaction({
+  //   hash: submitComplaintData?.hash,
+  // });
+
+  // const { isLoading: isPendingStartLease, isSuccess: isSuccessStartLease } =
+  //   useWaitForTransaction({
+  //     hash: startLeaseData?.hash,
+  //   });
 
   useEffect(() => {
     getAllProperties();
@@ -136,7 +169,7 @@ export default function Home() {
             </select>
             <button
               className="bg-white"
-              disabled={propertyLoading}
+              disabled={addPropertyLoading}
               type="submit"
             >
               Add
@@ -164,10 +197,50 @@ export default function Home() {
             <input name="description" placeholder="Description" />
             <button
               className="bg-white"
-              disabled={propertyLoading}
+              disabled={addPropertyLoading}
               type="submit"
             >
               Submit
+            </button>
+          </form>
+        </DialogContent>
+      </>
+    );
+  };
+
+  const renderStartLeaseForm = () => {
+    return (
+      <>
+        <DialogTitle>Start Lease</DialogTitle>
+        <DialogContent>
+          <form
+            className="grid gap-y-5 text-black"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const tenantAddress = formData.get("tenantAddress") as Address;
+              const tenantName = formData.get("tenantName") as string;
+              const duration = formData.get("duration") as unknown as bigint;
+              startLease({
+                args: [propertyIndex!, tenantAddress, tenantName, duration],
+              });
+            }}
+          >
+            <input name="tenantAddress" placeholder="Tenant Address" />
+            <input name="tenantName" placeholder="Tenant Name" />
+            <input
+              className="border border-slate-600"
+              type="number"
+              step={1}
+              min={1}
+              name="duration"
+            />
+            <button
+              className="bg-white"
+              disabled={startLeaseLoading}
+              type="submit"
+            >
+              Start
             </button>
           </form>
         </DialogContent>
@@ -218,11 +291,30 @@ export default function Home() {
   const renderTransaction = () => {
     return (
       <>
-        {propertyLoading && <div>Check wallet...</div>}
+        {(startLeaseLoading ||
+          submitComplaintLoading ||
+          addPropertyLoading) && <div>Check wallet...</div>}
         {isPending && <div>Transaction pending...</div>}
-        {isSuccess && <div>Transaction Hash: {propertyData?.hash}</div>}
-        {propertyIsError && (
-          <div>{(propertyError as BaseError)?.shortMessage}</div>
+        {isSuccess && (
+          <div>
+            Transaction Hash:
+            {addPropertyData
+              ? addPropertyData?.hash
+              : submitComplaintData
+              ? submitComplaintData?.hash
+              : startLeaseData
+              ? startLeaseData?.hash
+              : signLeaseData?.hash}
+          </div>
+        )}
+        {addPropertyIsError ? (
+          <div>{(addPropertyError as BaseError)?.message}</div>
+        ) : submitComplaintIsError ? (
+          <div>{(submitComplaintError as BaseError)?.message}</div>
+        ) : startLeaseIsError ? (
+          <div>{(startLeaseError as BaseError)?.message}</div>
+        ) : (
+          <div>{(signLeaseError as BaseError)?.message}</div>
         )}
       </>
     );
@@ -233,23 +325,75 @@ export default function Home() {
       <div className="w-full">
         Profile
         <div className={"flex justify-between items-center " + sectionClass}>
-          <div className="flex justify-start rounded-xl border-white">
+          <div className="flex justify-start gap-x-5 rounded-xl border-white">
             {ownProperties?.map((property) => {
               return (
                 <div>
-                  <div>Property Address: {property.propertyAddress}</div>
-                  <div>Property Owner Name: {property.ownerName}</div>
-                  <div>Property Type: {property.propertyType}</div>
-                  <Button
-                    onClick={() => {
-                      setPropertyIndex(property.propertyIndex);
-                      setOpenComplaintForm(true);
-                    }}
-                    variant="contained"
-                    size="small"
-                  >
-                    Complain
-                  </Button>
+                  <p>Property Address: {property.propertyAddress}</p>
+                  <p>Property Owner Name: {property.ownerName}</p>
+                  <p>Property Type: {property.propertyType}</p>
+                  <div className="flex justify-between">
+                    {property.leaseInfo.isActive && (
+                      <Button
+                        onClick={() => {
+                          setPropertyIndex(property.propertyIndex);
+                          setOpenComplaintForm(true);
+                        }}
+                        variant="contained"
+                        size="small"
+                        color="error"
+                      >
+                        Complain
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => {
+                        setPropertyIndex(property.propertyIndex);
+                        setOpenStartLeaseForm(true);
+                      }}
+                      variant="contained"
+                      size="small"
+                    >
+                      Start Lease
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+            {leasedProperties?.map((property) => {
+              return (
+                <div>
+                  <p>Property Address: {property.propertyAddress}</p>
+                  <p>Property Owner Name: {property.ownerName}</p>
+                  <p>Property Type: {property.propertyType}</p>
+                  <div className="flex justify-between">
+                    {property.leaseInfo.isActive ? (
+                      <Button
+                        onClick={() => {
+                          setPropertyIndex(property.propertyIndex);
+                          setOpenComplaintForm(true);
+                        }}
+                        variant="contained"
+                        size="small"
+                        color="error"
+                      >
+                        Complain
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          signLease({
+                            args: [property.propertyIndex],
+                          });
+                        }}
+                        variant="contained"
+                        size="small"
+                        color="warning"
+                      >
+                        Sign
+                      </Button>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -300,6 +444,13 @@ export default function Home() {
         onClose={() => setOpenComplaintForm(false)}
       >
         {renderComplaintForm()}
+      </Dialog>
+
+      <Dialog
+        open={openStartLeaseForm}
+        onClose={() => setOpenStartLeaseForm(false)}
+      >
+        {renderStartLeaseForm()}
       </Dialog>
     </main>
   );
