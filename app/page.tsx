@@ -62,18 +62,15 @@ export default function Home() {
       <div className="w-full">
         Complaints
         <div className={sectionClass}>
-          <div>
-            <Complaints />
-          </div>
+          <Complaints />
         </div>
       </div>
 
       <div className="w-full">
         Properties
         <div className={sectionClass}>
-          <div>
-            <Properties />
-          </div>
+          <Properties />
+
           <div>
             <Button
               onClick={() => setOpenPropertyForm(true)}
@@ -103,8 +100,8 @@ export default function Home() {
       </Dialog>
 
       <Dialog
-        open={openStartLeaseForm}
-        onClose={() => setOpenStartLeaseForm(false)}
+        open={openStartLeaseForm!.opened}
+        onClose={() => setOpenStartLeaseForm({ opened: false })}
       >
         <StartLease />
       </Dialog>
@@ -120,4 +117,4 @@ export default function Home() {
 }
 
 const sectionClass =
-  "flex justify-evenly items-center border-2 rounded-lg border-slate-600 p-5";
+  "flex justify-evenly items-center border-2 rounded-lg border-slate-600 p-5 gap-3";

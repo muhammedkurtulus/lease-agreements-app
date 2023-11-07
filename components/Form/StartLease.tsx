@@ -1,12 +1,12 @@
 import { contract } from "@/providers/WalletProvider";
 import { DialogContent, DialogTitle } from "@mui/material";
-import { Address, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useEffect } from "react";
 import { useContractContext } from "@/providers/ContractContextProvider";
 
 export const StartLease = () => {
-  const { propertyIndex } = useUserContext();
+  const { propertyIndex, openStartLeaseForm } = useUserContext();
 
   const {
     setResultFunction,
@@ -14,6 +14,8 @@ export const StartLease = () => {
     setIsErrorFunction,
     setLoadingFunction,
   } = useContractContext();
+
+  const { address } = useAccount();
 
   const {
     write: startLease,
@@ -51,7 +53,9 @@ export const StartLease = () => {
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
-            const tenantAddress = formData.get("tenantAddress") as Address;
+            const tenantAddress = openStartLeaseForm.fromTenant
+              ? address!
+              : (formData.get("tenantAddress") as Address);
             const tenantName = formData.get("tenantName") as string;
             const duration = formData.get("duration") as unknown as bigint;
             startLease({
@@ -59,7 +63,12 @@ export const StartLease = () => {
             });
           }}
         >
-          <input name="tenantAddress" placeholder="Tenant Address" />
+          <input
+            name="tenantAddress"
+            placeholder="Tenant Address"
+            disabled={openStartLeaseForm.fromTenant}
+            value={openStartLeaseForm.fromTenant ? address : undefined}
+          />
           <input name="tenantName" placeholder="Tenant Name" />
           <input
             className="border border-slate-600"

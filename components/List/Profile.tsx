@@ -19,13 +19,10 @@ export const Profile = () => {
   } = useContractContext();
 
   const {
-    ownProperties,
-    leasedProperties,
-    setOpenComplaintForm,
+    relatedProperties,
     setOpenStartLeaseForm,
     setSelectedProperty,
-    setOwnProperties,
-    setLeasedProperties,
+    setRelatedProperties,
     setPropertyIndex,
   } = useUserContext();
 
@@ -66,36 +63,41 @@ export const Profile = () => {
   useEffect(() => {
     console.log("properties", properties);
 
-    const ownProperties = properties?.filter(
-      (property) => property.owner === address
-    );
-    const leasedProperties = properties?.filter(
-      (property) => property.leaseInfo.tenantAddress === address
+    const _properties = properties?.filter(
+      (property) =>
+        property.owner === address ||
+        property.leaseInfo.tenantAddress === address
     );
 
-    setOwnProperties(ownProperties);
-    setLeasedProperties(leasedProperties);
+    setRelatedProperties(_properties);
   }, [properties, address]);
 
+  useEffect(() => {
+    console.log("relatedProperties", relatedProperties);
+  }, [relatedProperties]);
+
   return (
-    <div className={listClass}>
-      {ownProperties?.map((property: PropertyInfo) => {
-        return (
-          <div className={cardClass}>
-            <div className="flex">
-              {property.propertyType === PropertyType.House ? (
-                <House />
-              ) : (
-                <Storefront />
-              )}
-              Owner
-            </div>
+    relatedProperties &&
+    relatedProperties.length > 0 && (
+      <div className={listClass}>
+        {relatedProperties.map((property: PropertyInfo) => {
+          return (
+            <div className={cardClass}>
+              <div className="flex">
+                {property.propertyType === PropertyType.House ? (
+                  <House />
+                ) : (
+                  <Storefront />
+                )}
+                {property.owner === address ? "Owner" : "Tenant"}
+                {!property.isListed && (
+                  <span className="text-red-800">(unlisted)</span>
+                )}
+              </div>
+              <p>Property Address: {property.propertyAddress}</p>
+              <p>Owner Name: {property.ownerName}</p>
+              <p>Index: {Number(property.propertyIndex)}</p>
 
-            <p>Property Address: {property.propertyAddress}</p>
-            <p>Owner Name: {property.ownerName}</p>
-            <p>Index: {Number(property.propertyIndex)}</p>
-
-            <div className="flex justify-between">
               {property.leaseInfo.isActive && (
                 <Button
                   onClick={() => {
@@ -109,69 +111,47 @@ export const Profile = () => {
                 </Button>
               )}
 
-              {!property.leaseInfo.isActive && (
-                <Button
-                  onClick={() => {
-                    setPropertyIndex(property.propertyIndex);
-                    setOpenStartLeaseForm(true);
-                  }}
-                  variant="contained"
-                  size="small"
-                  disabled={property.leaseInfo.tenantAddress !== zeroAddress}
-                >
-                  Start Lease
-                </Button>
-              )}
-            </div>
-          </div>
-        );
-      })}
+              {!property.leaseInfo.isActive &&
+                property.leaseInfo.initiatorAddress === zeroAddress && (
+                  <Button
+                    onClick={() => {
+                      setPropertyIndex(property.propertyIndex);
+                      setOpenStartLeaseForm({
+                        opened: true,
+                        fromTenant: property.owner === address ? false : true,
+                      });
+                    }}
+                    variant="contained"
+                    size="small"
+                    disabled={
+                      property.leaseInfo.tenantAddress !== zeroAddress ||
+                      !property.isListed
+                    }
+                  >
+                    Start Lease
+                  </Button>
+                )}
 
-      {leasedProperties?.map((property: PropertyInfo) => {
-        return (
-          <div className="border-2 rounded-xl p-3 border-green-800">
-            <div className="flex">
-              {property.propertyType === PropertyType.House ? (
-                <House />
-              ) : (
-                <Storefront />
-              )}
-              Tenant
+              {!property.leaseInfo.isActive &&
+                property.leaseInfo.initiatorAddress !== zeroAddress &&
+                property.leaseInfo.initiatorAddress !== address && (
+                  <Button
+                    onClick={() => {
+                      signLease({
+                        args: [property.propertyIndex],
+                      });
+                    }}
+                    variant="contained"
+                    size="small"
+                    color="warning"
+                  >
+                    Sign
+                  </Button>
+                )}
             </div>
-            <p>Property Address: {property.propertyAddress}</p>
-            <p>Owner Name: {property.ownerName}</p>
-            <p>Index: {Number(property.propertyIndex)}</p>
-            <div className="flex justify-between">
-              {property.leaseInfo.isActive ? (
-                <Button
-                  onClick={() => {
-                    setPropertyIndex(property.propertyIndex);
-                    setOpenComplaintForm(true);
-                  }}
-                  variant="contained"
-                  size="small"
-                  color="error"
-                >
-                  Complain
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    signLease({
-                      args: [property.propertyIndex],
-                    });
-                  }}
-                  variant="contained"
-                  size="small"
-                  color="warning"
-                >
-                  Sign
-                </Button>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    )
   );
 };

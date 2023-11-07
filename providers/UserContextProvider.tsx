@@ -13,17 +13,15 @@ const UserContext = createContext(
   {} as {
     openPropertyForm: boolean;
     openComplaintForm: boolean;
-    openStartLeaseForm: boolean;
+    openStartLeaseForm: StartLeaseForm;
     selectedProperty: PropertyInfo | undefined;
-    ownProperties: PropertyInfo[] | undefined;
-    leasedProperties: PropertyInfo[] | undefined;
+    relatedProperties: PropertyInfo[] | undefined;
     propertyIndex: bigint | undefined;
     setOpenPropertyForm: Dispatch<SetStateAction<boolean>>;
     setOpenComplaintForm: Dispatch<SetStateAction<boolean>>;
-    setOpenStartLeaseForm: Dispatch<SetStateAction<boolean>>;
+    setOpenStartLeaseForm: Dispatch<SetStateAction<StartLeaseForm>>;
     setSelectedProperty: Dispatch<SetStateAction<PropertyInfo | undefined>>;
-    setOwnProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
-    setLeasedProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
+    setRelatedProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
     setPropertyIndex: Dispatch<SetStateAction<bigint | undefined>>;
   }
 );
@@ -35,10 +33,11 @@ export const UserContextProvider = ({
 }) => {
   const [openPropertyForm, setOpenPropertyForm] = useState(false);
   const [openComplaintForm, setOpenComplaintForm] = useState(false);
-  const [openStartLeaseForm, setOpenStartLeaseForm] = useState(false);
+  const [openStartLeaseForm, setOpenStartLeaseForm] = useState<StartLeaseForm>({
+    opened: false,
+  });
   const [selectedProperty, setSelectedProperty] = useState<PropertyInfo>();
-  const [ownProperties, setOwnProperties] = useState<PropertyInfo[]>();
-  const [leasedProperties, setLeasedProperties] = useState<PropertyInfo[]>();
+  const [relatedProperties, setRelatedProperties] = useState<PropertyInfo[]>();
   const [propertyIndex, setPropertyIndex] = useState<bigint>();
 
   return (
@@ -48,15 +47,13 @@ export const UserContextProvider = ({
         openComplaintForm,
         openStartLeaseForm,
         selectedProperty,
-        ownProperties,
-        leasedProperties,
+        relatedProperties,
         propertyIndex,
         setOpenPropertyForm,
         setOpenComplaintForm,
         setOpenStartLeaseForm,
         setSelectedProperty,
-        setOwnProperties,
-        setLeasedProperties,
+        setRelatedProperties,
         setPropertyIndex,
       }}
     >
@@ -66,3 +63,8 @@ export const UserContextProvider = ({
 };
 
 export const useUserContext = () => useContext(UserContext);
+
+interface StartLeaseForm {
+  opened: boolean;
+  fromTenant?: boolean;
+}

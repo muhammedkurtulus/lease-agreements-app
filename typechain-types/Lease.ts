@@ -50,6 +50,7 @@ export type ComplaintStructOutput = [
 
 export type LeaseInfoStruct = {
   tenantAddress: AddressLike;
+  initiatorAddress: AddressLike;
   tenantName: string;
   startDate: BigNumberish;
   endDate: BigNumberish;
@@ -62,6 +63,7 @@ export type LeaseInfoStruct = {
 
 export type LeaseInfoStructOutput = [
   tenantAddress: string,
+  initiatorAddress: string,
   tenantName: string,
   startDate: bigint,
   endDate: bigint,
@@ -72,6 +74,7 @@ export type LeaseInfoStructOutput = [
   terminationRequestTime: bigint
 ] & {
   tenantAddress: string;
+  initiatorAddress: string;
   tenantName: string;
   startDate: bigint;
   endDate: bigint;
@@ -121,6 +124,7 @@ export interface LeaseInterface extends Interface {
       | "getAllComplaints"
       | "getAllProperties"
       | "isManager"
+      | "listProperty"
       | "managers"
       | "owner"
       | "properties"
@@ -174,6 +178,10 @@ export interface LeaseInterface extends Interface {
   encodeFunctionData(
     functionFragment: "isManager",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "listProperty",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "managers",
@@ -247,6 +255,10 @@ export interface LeaseInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isManager", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "listProperty",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "managers", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "properties", data: BytesLike): Result;
@@ -528,6 +540,12 @@ export interface Lease extends BaseContract {
     "view"
   >;
 
+  listProperty: TypedContractMethod<
+    [propertyIndex: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   managers: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
   owner: TypedContractMethod<[], [string], "view">;
@@ -674,6 +692,9 @@ export interface Lease extends BaseContract {
   getFunction(
     nameOrSignature: "isManager"
   ): TypedContractMethod<[managerAddress: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "listProperty"
+  ): TypedContractMethod<[propertyIndex: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "managers"
   ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
