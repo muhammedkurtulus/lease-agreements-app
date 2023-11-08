@@ -1,12 +1,13 @@
 "use client";
 
 import { AddProperty } from "@/components/Form/AddProperty";
+import { RequestTermination } from "@/components/Form/RequestTermination";
 import { StartLease } from "@/components/Form/StartLease";
 import { SubmitComplaint } from "@/components/Form/SubmitComplaint";
 import { LeaseInfo } from "@/components/LeaseInfo";
-import { Complaints } from "@/components/List/Complaints";
-import { Profile } from "@/components/List/Profile";
-import { Properties } from "@/components/List/Properties";
+import { Complaints } from "@/components/Section/Complaints";
+import { Profile } from "@/components/Section/Profile";
+import { Properties } from "@/components/Section/Properties";
 import { TransactionInfo } from "@/components/TransactionInfo";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -26,6 +27,8 @@ export default function Home() {
     setOpenComplaintForm,
     setOpenStartLeaseForm,
     setSelectedProperty,
+    openRequestTermination,
+    setOpenRequestTermination,
   } = useUserContext();
 
   const { resultFunction } = useContractContext();
@@ -111,6 +114,13 @@ export default function Home() {
         onClose={() => setSelectedProperty(undefined)}
       >
         <LeaseInfo />
+      </Dialog>
+
+      <Dialog
+        open={openRequestTermination}
+        onClose={() => setOpenRequestTermination(false)}
+      >
+        <RequestTermination />
       </Dialog>
     </main>
   );

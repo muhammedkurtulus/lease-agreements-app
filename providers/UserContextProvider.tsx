@@ -17,12 +17,14 @@ const UserContext = createContext(
     selectedProperty: PropertyInfo | undefined;
     relatedProperties: PropertyInfo[] | undefined;
     propertyIndex: bigint | undefined;
+    openRequestTermination: boolean;
     setOpenPropertyForm: Dispatch<SetStateAction<boolean>>;
     setOpenComplaintForm: Dispatch<SetStateAction<boolean>>;
     setOpenStartLeaseForm: Dispatch<SetStateAction<StartLeaseForm>>;
     setSelectedProperty: Dispatch<SetStateAction<PropertyInfo | undefined>>;
     setRelatedProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
     setPropertyIndex: Dispatch<SetStateAction<bigint | undefined>>;
+    setOpenRequestTermination: Dispatch<SetStateAction<boolean>>;
   }
 );
 
@@ -33,6 +35,7 @@ export const UserContextProvider = ({
 }) => {
   const [openPropertyForm, setOpenPropertyForm] = useState(false);
   const [openComplaintForm, setOpenComplaintForm] = useState(false);
+  const [openRequestTermination, setOpenRequestTermination] = useState(false);
   const [openStartLeaseForm, setOpenStartLeaseForm] = useState<StartLeaseForm>({
     opened: false,
   });
@@ -49,12 +52,14 @@ export const UserContextProvider = ({
         selectedProperty,
         relatedProperties,
         propertyIndex,
+        openRequestTermination,
         setOpenPropertyForm,
         setOpenComplaintForm,
         setOpenStartLeaseForm,
         setSelectedProperty,
         setRelatedProperties,
         setPropertyIndex,
+        setOpenRequestTermination,
       }}
     >
       {children}

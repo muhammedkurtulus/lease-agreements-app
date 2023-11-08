@@ -22,6 +22,7 @@ export const LeaseInfo = () => {
             Complain
           </Button>
         )}
+        {/* //TODO: Termination buttonu koy */}
       </DialogContent>
     </>
   );

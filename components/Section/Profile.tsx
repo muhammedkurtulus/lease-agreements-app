@@ -9,6 +9,7 @@ import { Button } from "@mui/material";
 import { useEffect } from "react";
 import { zeroAddress } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
+import { ListingStatusButtons } from "../ListingStatusButtons";
 
 export const Profile = () => {
   const {
@@ -71,10 +72,6 @@ export const Profile = () => {
 
     setRelatedProperties(_properties);
   }, [properties, address]);
-
-  useEffect(() => {
-    console.log("relatedProperties", relatedProperties);
-  }, [relatedProperties]);
 
   return (
     relatedProperties &&
@@ -148,6 +145,8 @@ export const Profile = () => {
                     Sign
                   </Button>
                 )}
+
+              <ListingStatusButtons property={property} />
             </div>
           );
         })}
