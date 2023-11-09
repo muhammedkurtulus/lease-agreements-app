@@ -2,6 +2,7 @@
 
 import { AddProperty } from "@/components/Form/AddProperty";
 import { RequestTermination } from "@/components/Form/RequestTermination";
+import { ReviewComplaint } from "@/components/Form/ReviewComplaint";
 import { StartLease } from "@/components/Form/StartLease";
 import { SubmitComplaint } from "@/components/Form/SubmitComplaint";
 import { LeaseInfo } from "@/components/LeaseInfo";
@@ -29,6 +30,8 @@ export default function Home() {
     setSelectedProperty,
     openRequestTermination,
     setOpenRequestTermination,
+    openReviewComplaint,
+    setOpenReviewComplaint,
   } = useUserContext();
 
   const { resultFunction } = useContractContext();
@@ -50,6 +53,12 @@ export default function Home() {
   useEffect(() => {
     getAllProperties();
     getAllComplaints();
+
+    setOpenComplaintForm(false);
+    setOpenPropertyForm(false);
+    setOpenRequestTermination(false);
+    setOpenReviewComplaint(false);
+    setOpenStartLeaseForm({ opened: false });
   }, [isSuccess]);
 
   return (
@@ -121,6 +130,13 @@ export default function Home() {
         onClose={() => setOpenRequestTermination(false)}
       >
         <RequestTermination />
+      </Dialog>
+
+      <Dialog
+        open={openReviewComplaint}
+        onClose={() => setOpenReviewComplaint(false)}
+      >
+        <ReviewComplaint />
       </Dialog>
     </main>
   );

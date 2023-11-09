@@ -19,6 +19,7 @@ export enum ConfirmationType {
 export interface Complaint {
   complainant?: Address;
   whoAbout: Address;
+  complaintIndex: bigint;
   propertyIndex: bigint;
   description?: string;
   confirmed?: ConfirmationType;

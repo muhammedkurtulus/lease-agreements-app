@@ -16,6 +16,11 @@ export const Properties = () => {
     functionName: "getAllProperties",
   });
 
+  const { data: complaints } = useContractRead({
+    ...contract,
+    functionName: "getAllComplaints",
+  });
+
   const { address } = useAccount();
 
   return (
@@ -23,7 +28,10 @@ export const Properties = () => {
     properties.length > 0 && (
       <div className={listClass}>
         {properties.map((property: PropertyInfo) => {
-          if (property.isListed) {
+          const isBanned = complaints?.some(
+            (c) => c.whoAbout === property.owner && c.confirmed
+          );
+          if (property.isListed && !isBanned) {
             return (
               <div className={cardClass}>
                 <div className="flex">

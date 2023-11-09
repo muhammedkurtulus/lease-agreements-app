@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyInfo } from "@/app/types";
+import { Complaint, PropertyInfo } from "@/app/types";
 import {
   Dispatch,
   SetStateAction,
@@ -18,6 +18,8 @@ const UserContext = createContext(
     relatedProperties: PropertyInfo[] | undefined;
     propertyIndex: bigint | undefined;
     openRequestTermination: boolean;
+    openReviewComplaint: boolean;
+    selectedComplaint: Complaint | undefined;
     setOpenPropertyForm: Dispatch<SetStateAction<boolean>>;
     setOpenComplaintForm: Dispatch<SetStateAction<boolean>>;
     setOpenStartLeaseForm: Dispatch<SetStateAction<StartLeaseForm>>;
@@ -25,6 +27,8 @@ const UserContext = createContext(
     setRelatedProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
     setPropertyIndex: Dispatch<SetStateAction<bigint | undefined>>;
     setOpenRequestTermination: Dispatch<SetStateAction<boolean>>;
+    setOpenReviewComplaint: Dispatch<SetStateAction<boolean>>;
+    setSelectedComplaint: Dispatch<SetStateAction<Complaint | undefined>>;
   }
 );
 
@@ -36,10 +40,12 @@ export const UserContextProvider = ({
   const [openPropertyForm, setOpenPropertyForm] = useState(false);
   const [openComplaintForm, setOpenComplaintForm] = useState(false);
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
+  const [openReviewComplaint, setOpenReviewComplaint] = useState(false);
   const [openStartLeaseForm, setOpenStartLeaseForm] = useState<StartLeaseForm>({
     opened: false,
   });
   const [selectedProperty, setSelectedProperty] = useState<PropertyInfo>();
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint>();
   const [relatedProperties, setRelatedProperties] = useState<PropertyInfo[]>();
   const [propertyIndex, setPropertyIndex] = useState<bigint>();
 
@@ -53,6 +59,8 @@ export const UserContextProvider = ({
         relatedProperties,
         propertyIndex,
         openRequestTermination,
+        openReviewComplaint,
+        selectedComplaint,
         setOpenPropertyForm,
         setOpenComplaintForm,
         setOpenStartLeaseForm,
@@ -60,6 +68,8 @@ export const UserContextProvider = ({
         setRelatedProperties,
         setPropertyIndex,
         setOpenRequestTermination,
+        setOpenReviewComplaint,
+        setSelectedComplaint,
       }}
     >
       {children}

@@ -34,6 +34,11 @@ export const Profile = () => {
     functionName: "getAllProperties",
   });
 
+  const { data: complaints } = useContractRead({
+    ...contract,
+    functionName: "getAllComplaints",
+  });
+
   const {
     write: signLease,
     data,
@@ -78,6 +83,9 @@ export const Profile = () => {
     relatedProperties.length > 0 && (
       <div className={listClass}>
         {relatedProperties.map((property: PropertyInfo) => {
+          const isBanned = complaints?.some(
+            (c) => c.whoAbout === property.owner && c.confirmed
+          );
           return (
             <div className={cardClass}>
               <div className="flex">
@@ -88,8 +96,9 @@ export const Profile = () => {
                 )}
                 {property.owner === address ? "Owner" : "Tenant"}
                 {!property.isListed && (
-                  <span className="text-red-800">(unlisted)</span>
+                  <span className="text-yellow-800">(unlisted)</span>
                 )}
+                {isBanned && <span className="text-red-800">(banned)</span>}
               </div>
               <p>Property Address: {property.propertyAddress}</p>
               <p>Owner Name: {property.ownerName}</p>
@@ -122,7 +131,8 @@ export const Profile = () => {
                     size="small"
                     disabled={
                       property.leaseInfo.tenantAddress !== zeroAddress ||
-                      !property.isListed
+                      !property.isListed ||
+                      isBanned
                     }
                   >
                     Start Lease
@@ -146,7 +156,7 @@ export const Profile = () => {
                   </Button>
                 )}
 
-              <ListingStatusButtons property={property} />
+              <ListingStatusButtons property={property} isBanned={isBanned!} />
             </div>
           );
         })}

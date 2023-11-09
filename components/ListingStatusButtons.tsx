@@ -7,8 +7,10 @@ import { useAccount, useContractWrite } from "wagmi";
 
 export const ListingStatusButtons = ({
   property,
+  isBanned,
 }: {
   property: PropertyInfo;
+  isBanned: boolean;
 }) => {
   const {
     setResultFunction,
@@ -98,6 +100,7 @@ export const ListingStatusButtons = ({
         variant="contained"
         size="small"
         color="success"
+        disabled={isBanned}
       >
         List
       </Button>

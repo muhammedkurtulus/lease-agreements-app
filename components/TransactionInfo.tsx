@@ -1,5 +1,4 @@
 import { useContractContext } from "@/providers/ContractContextProvider";
-import { useEffect } from "react";
 import { BaseError } from "viem";
 
 export const TransactionInfo = ({
