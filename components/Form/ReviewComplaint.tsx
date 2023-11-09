@@ -1,7 +1,8 @@
+import { buttonGroupClass } from "@/app/classes";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle } from "@mui/material";
 import { useEffect } from "react";
 import { useContractWrite } from "wagmi";
 
@@ -44,47 +45,55 @@ export const ReviewComplaint = () => {
 
   return (
     <>
-      <DialogTitle>Submit Complaint</DialogTitle>
-      <DialogContent>
-        <p>Complainant Address: {selectedComplaint?.complainant}</p>
-        <p>Complained Address: {selectedComplaint?.whoAbout}</p>
-        <p>Property Index: {Number(selectedComplaint?.propertyIndex)}</p>
-        <p>Complaint Index: {Number(selectedComplaint?.complaintIndex)}</p>
+      <DialogTitle>Review Complaint</DialogTitle>
+      <DialogContent className="grid gap-3">
+        <div>
+          <p>Complainant Address: {selectedComplaint?.complainant}</p>
+          <p>Complained Address: {selectedComplaint?.whoAbout}</p>
+          <p>Property Index: {Number(selectedComplaint?.propertyIndex)}</p>
+          <p>Complaint Index: {Number(selectedComplaint?.complaintIndex)}</p>
+          <p>Description: {selectedComplaint?.description}</p>
+        </div>
 
-        <button
-          className="bg-white"
-          disabled={isLoading}
-          type="submit"
-          onClick={() =>
-            reviewComplaint({
-              args: [
-                selectedComplaint?.propertyIndex!,
-                selectedComplaint?.complaintIndex!,
-                selectedComplaint?.whoAbout!,
-                true,
-              ],
-            })
-          }
-        >
-          Confirm
-        </button>
-        <button
-          className="bg-white"
-          disabled={isLoading}
-          type="submit"
-          onClick={() =>
-            reviewComplaint({
-              args: [
-                selectedComplaint?.propertyIndex!,
-                selectedComplaint?.complaintIndex!,
-                selectedComplaint?.whoAbout!,
-                false,
-              ],
-            })
-          }
-        >
-          Reject
-        </button>
+        <div className={buttonGroupClass}>
+          <Button
+            className="bg-white"
+            disabled={isLoading}
+            variant="contained"
+            size="small"
+            color="warning"
+            onClick={() =>
+              reviewComplaint({
+                args: [
+                  selectedComplaint?.propertyIndex!,
+                  selectedComplaint?.complaintIndex!,
+                  selectedComplaint?.whoAbout!,
+                  true,
+                ],
+              })
+            }
+          >
+            Confirm
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            color="error"
+            disabled={isLoading}
+            onClick={() =>
+              reviewComplaint({
+                args: [
+                  selectedComplaint?.propertyIndex!,
+                  selectedComplaint?.complaintIndex!,
+                  selectedComplaint?.whoAbout!,
+                  false,
+                ],
+              })
+            }
+          >
+            Reject
+          </Button>
+        </div>
       </DialogContent>
     </>
   );

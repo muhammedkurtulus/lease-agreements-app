@@ -16,19 +16,19 @@ const UserContext = createContext(
     openStartLeaseForm: StartLeaseForm;
     selectedProperty: PropertyInfo | undefined;
     relatedProperties: PropertyInfo[] | undefined;
-    propertyIndex: bigint | undefined;
     openRequestTermination: boolean;
     openReviewComplaint: boolean;
     selectedComplaint: Complaint | undefined;
+    openLeaseInfo: boolean;
     setOpenPropertyForm: Dispatch<SetStateAction<boolean>>;
     setOpenComplaintForm: Dispatch<SetStateAction<boolean>>;
     setOpenStartLeaseForm: Dispatch<SetStateAction<StartLeaseForm>>;
     setSelectedProperty: Dispatch<SetStateAction<PropertyInfo | undefined>>;
     setRelatedProperties: Dispatch<SetStateAction<PropertyInfo[] | undefined>>;
-    setPropertyIndex: Dispatch<SetStateAction<bigint | undefined>>;
     setOpenRequestTermination: Dispatch<SetStateAction<boolean>>;
     setOpenReviewComplaint: Dispatch<SetStateAction<boolean>>;
     setSelectedComplaint: Dispatch<SetStateAction<Complaint | undefined>>;
+    setOpenLeaseInfo: Dispatch<SetStateAction<boolean>>;
   }
 );
 
@@ -41,13 +41,13 @@ export const UserContextProvider = ({
   const [openComplaintForm, setOpenComplaintForm] = useState(false);
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
   const [openReviewComplaint, setOpenReviewComplaint] = useState(false);
+  const [openLeaseInfo, setOpenLeaseInfo] = useState(false);
   const [openStartLeaseForm, setOpenStartLeaseForm] = useState<StartLeaseForm>({
     opened: false,
   });
   const [selectedProperty, setSelectedProperty] = useState<PropertyInfo>();
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint>();
   const [relatedProperties, setRelatedProperties] = useState<PropertyInfo[]>();
-  const [propertyIndex, setPropertyIndex] = useState<bigint>();
 
   return (
     <UserContext.Provider
@@ -57,19 +57,19 @@ export const UserContextProvider = ({
         openStartLeaseForm,
         selectedProperty,
         relatedProperties,
-        propertyIndex,
         openRequestTermination,
         openReviewComplaint,
         selectedComplaint,
+        openLeaseInfo,
         setOpenPropertyForm,
         setOpenComplaintForm,
         setOpenStartLeaseForm,
         setSelectedProperty,
         setRelatedProperties,
-        setPropertyIndex,
         setOpenRequestTermination,
         setOpenReviewComplaint,
         setSelectedComplaint,
+        setOpenLeaseInfo,
       }}
     >
       {children}

@@ -1,7 +1,8 @@
+import { formClass, inputClass } from "@/app/classes";
 import { PropertyType } from "@/app/types";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useEffect } from "react";
 import { useContractWrite } from "wagmi";
 
@@ -45,7 +46,7 @@ export const AddProperty = () => {
       <DialogTitle>Add Property</DialogTitle>
       <DialogContent>
         <form
-          className="grid gap-y-5 text-black"
+          className={formClass}
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
@@ -61,15 +62,31 @@ export const AddProperty = () => {
             });
           }}
         >
-          <input name="propertyAddress" placeholder="Property Address" />
-          <input name="propertyOwnerName" placeholder="Property Owner Name" />
-          <select name="propertyType">
+          <select className={inputClass} name="propertyType">
             <option value={PropertyType.House}>House</option>
             <option value={PropertyType.Shop}>Shop</option>
           </select>
-          <button className="bg-white" disabled={isLoading} type="submit">
+
+          <TextField
+            name="propertyAddress"
+            label="Property Address"
+            variant="outlined"
+          />
+          <TextField
+            name="propertyOwnerName"
+            label="Property Owner Name"
+            variant="outlined"
+          />
+
+          <Button
+            variant="contained"
+            size="small"
+            color="success"
+            disabled={isLoading}
+            type="submit"
+          >
             Add
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </>

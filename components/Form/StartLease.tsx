@@ -1,12 +1,13 @@
 import { contract } from "@/providers/WalletProvider";
-import { DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useEffect } from "react";
 import { useContractContext } from "@/providers/ContractContextProvider";
+import { formClass, inputClass } from "@/app/classes";
 
 export const StartLease = () => {
-  const { propertyIndex, openStartLeaseForm } = useUserContext();
+  const { selectedProperty, openStartLeaseForm } = useUserContext();
 
   const {
     setResultFunction,
@@ -49,7 +50,7 @@ export const StartLease = () => {
       <DialogTitle>Start Lease</DialogTitle>
       <DialogContent>
         <form
-          className="grid gap-y-5 text-black"
+          className={formClass}
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
@@ -59,28 +60,57 @@ export const StartLease = () => {
             const tenantName = formData.get("tenantName") as string;
             const duration = formData.get("duration") as unknown as bigint;
             startLease({
-              args: [propertyIndex!, tenantAddress, tenantName, duration],
+              args: [
+                selectedProperty?.propertyIndex!,
+                tenantAddress,
+                tenantName,
+                duration,
+              ],
             });
           }}
         >
+          <p>Property Index: {Number(selectedProperty?.propertyIndex!)}</p>
+
+          <p>
+            <span>{`Owner Address: ${selectedProperty?.owner!}`}</span>
+            {selectedProperty?.owner! === address && (
+              <span className="text-yellow-500"> (you)</span>
+            )}
+          </p>
+
+          {!openStartLeaseForm.fromTenant ? (
+            <TextField
+              name="tenantAddress"
+              label="Tenant Address"
+              variant="outlined"
+            />
+          ) : (
+            <p>
+              {`Tenant Address: ${address}`}
+              <span className="text-yellow-500"> (you)</span>
+            </p>
+          )}
+
+          <TextField name="tenantName" label="Tenant Name" variant="outlined" />
+
           <input
-            name="tenantAddress"
-            placeholder="Tenant Address"
-            disabled={openStartLeaseForm.fromTenant}
-            value={openStartLeaseForm.fromTenant ? address : undefined}
-          />
-          <input name="tenantName" placeholder="Tenant Name" />
-          <input
-            className="border border-slate-600"
+            className={inputClass}
             placeholder="Duration"
             type="number"
             step={1}
             min={1}
             name="duration"
           />
-          <button className="bg-white" disabled={isLoading} type="submit">
+
+          <Button
+            variant="contained"
+            size="small"
+            color="success"
+            disabled={isLoading}
+            type="submit"
+          >
             Start
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </>

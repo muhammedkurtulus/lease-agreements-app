@@ -1,6 +1,11 @@
 "use client";
 
-import { PropertyInfo, PropertyType, cardClass, listClass } from "@/app/types";
+import {
+  buttonGroupClass,
+  cardClass,
+  listClass,
+  propertyTypeClass,
+} from "@/app/classes";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
@@ -10,6 +15,7 @@ import { useEffect } from "react";
 import { zeroAddress } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { ListingStatusButtons } from "../ListingStatusButtons";
+import { PropertyInfo, PropertyType } from "@/app/types";
 
 export const Profile = () => {
   const {
@@ -24,7 +30,7 @@ export const Profile = () => {
     setOpenStartLeaseForm,
     setSelectedProperty,
     setRelatedProperties,
-    setPropertyIndex,
+    setOpenLeaseInfo,
   } = useUserContext();
 
   const { address } = useAccount();
@@ -88,7 +94,7 @@ export const Profile = () => {
           );
           return (
             <div className={cardClass}>
-              <div className="flex">
+              <div className={propertyTypeClass}>
                 {property.propertyType === PropertyType.House ? (
                   <House />
                 ) : (
@@ -100,63 +106,72 @@ export const Profile = () => {
                 )}
                 {isBanned && <span className="text-red-800">(banned)</span>}
               </div>
-              <p>Property Address: {property.propertyAddress}</p>
-              <p>Owner Name: {property.ownerName}</p>
-              <p>Index: {Number(property.propertyIndex)}</p>
 
-              {property.leaseInfo.isActive && (
-                <Button
-                  onClick={() => {
-                    setSelectedProperty(property);
-                  }}
-                  variant="contained"
-                  size="small"
-                  color="secondary"
-                >
-                  View Lease
-                </Button>
-              )}
+              <div>
+                <p>Property Address: {property.propertyAddress}</p>
+                <p>Owner Name: {property.ownerName}</p>
+                <p>Index: {Number(property.propertyIndex)}</p>
+              </div>
 
-              {!property.leaseInfo.isActive &&
-                property.leaseInfo.initiatorAddress === zeroAddress && (
+              <div className={buttonGroupClass}>
+                {property.leaseInfo.isActive && (
                   <Button
                     onClick={() => {
-                      setPropertyIndex(property.propertyIndex);
-                      setOpenStartLeaseForm({
-                        opened: true,
-                        fromTenant: property.owner === address ? false : true,
-                      });
+                      setSelectedProperty(property);
+                      setOpenLeaseInfo(true);
                     }}
                     variant="contained"
                     size="small"
-                    disabled={
-                      property.leaseInfo.tenantAddress !== zeroAddress ||
-                      !property.isListed ||
-                      isBanned
-                    }
+                    color="secondary"
                   >
-                    Start Lease
+                    View Lease
                   </Button>
                 )}
 
-              {!property.leaseInfo.isActive &&
-                property.leaseInfo.initiatorAddress !== zeroAddress &&
-                property.leaseInfo.initiatorAddress !== address && (
-                  <Button
-                    onClick={() => {
-                      signLease({
-                        args: [property.propertyIndex],
-                      });
-                    }}
-                    variant="contained"
-                    size="small"
-                    color="warning"
-                  >
-                    Sign
-                  </Button>
-                )}
+                {!property.leaseInfo.isActive &&
+                  property.leaseInfo.initiatorAddress === zeroAddress && (
+                    <Button
+                      onClick={() => {
+                        setSelectedProperty(property);
+                        setOpenStartLeaseForm({
+                          opened: true,
+                          fromTenant: property.owner === address ? false : true,
+                        });
+                      }}
+                      variant="contained"
+                      size="small"
+                      disabled={
+                        property.leaseInfo.tenantAddress !== zeroAddress ||
+                        !property.isListed ||
+                        isBanned
+                      }
+                    >
+                      Start Lease
+                    </Button>
+                  )}
 
-              <ListingStatusButtons property={property} isBanned={isBanned!} />
+                {!property.leaseInfo.isActive &&
+                  property.leaseInfo.initiatorAddress !== zeroAddress &&
+                  property.leaseInfo.initiatorAddress !== address && (
+                    <Button
+                      onClick={() => {
+                        signLease({
+                          args: [property.propertyIndex],
+                        });
+                      }}
+                      variant="contained"
+                      size="small"
+                      color="warning"
+                    >
+                      Sign
+                    </Button>
+                  )}
+
+                <ListingStatusButtons
+                  property={property}
+                  isBanned={isBanned!}
+                />
+              </div>
             </div>
           );
         })}

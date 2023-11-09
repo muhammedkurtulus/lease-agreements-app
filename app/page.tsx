@@ -16,7 +16,8 @@ import { contract } from "@/providers/WalletProvider";
 import { Button, Dialog } from "@mui/material";
 import { ConnectKitButton } from "connectkit";
 import { useEffect } from "react";
-import { useContractRead, useWaitForTransaction } from "wagmi";
+import { useAccount, useContractRead, useWaitForTransaction } from "wagmi";
+import { sectionClass } from "./classes";
 
 export default function Home() {
   const {
@@ -27,14 +28,17 @@ export default function Home() {
     setOpenPropertyForm,
     setOpenComplaintForm,
     setOpenStartLeaseForm,
-    setSelectedProperty,
     openRequestTermination,
     setOpenRequestTermination,
     openReviewComplaint,
     setOpenReviewComplaint,
+    openLeaseInfo,
+    setOpenLeaseInfo,
   } = useUserContext();
 
   const { resultFunction } = useContractContext();
+
+  const { address } = useAccount();
 
   const { refetch: getAllProperties } = useContractRead({
     ...contract,
@@ -54,6 +58,7 @@ export default function Home() {
     getAllProperties();
     getAllComplaints();
 
+    setOpenLeaseInfo(false);
     setOpenComplaintForm(false);
     setOpenPropertyForm(false);
     setOpenRequestTermination(false);
@@ -88,6 +93,7 @@ export default function Home() {
               onClick={() => setOpenPropertyForm(true)}
               variant="contained"
               size="small"
+              disabled={!address}
             >
               Add Property
             </Button>
@@ -118,10 +124,7 @@ export default function Home() {
         <StartLease />
       </Dialog>
 
-      <Dialog
-        open={selectedProperty !== undefined}
-        onClose={() => setSelectedProperty(undefined)}
-      >
+      <Dialog open={openLeaseInfo} onClose={() => setOpenLeaseInfo(false)}>
         <LeaseInfo />
       </Dialog>
 
@@ -141,6 +144,3 @@ export default function Home() {
     </main>
   );
 }
-
-const sectionClass =
-  "flex justify-evenly items-center border-2 rounded-lg border-slate-600 p-5 gap-3";

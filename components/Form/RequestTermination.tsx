@@ -1,12 +1,13 @@
+import { formClass } from "@/app/classes";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useEffect } from "react";
 import { useContractWrite } from "wagmi";
 
 export const RequestTermination = () => {
-  const { propertyIndex } = useUserContext();
+  const { selectedProperty } = useUserContext();
 
   const {
     setResultFunction,
@@ -47,18 +48,27 @@ export const RequestTermination = () => {
       <DialogTitle>Request Termination</DialogTitle>
       <DialogContent>
         <form
-          className="grid gap-y-5 text-black"
+          className={formClass}
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
             const reason = formData.get("reason") as string;
-            requestTermination({ args: [propertyIndex!, reason] });
+            requestTermination({
+              args: [selectedProperty?.propertyIndex!, reason],
+            });
           }}
         >
-          <input name="reason" placeholder="Reason" />
-          <button className="bg-white" disabled={isLoading} type="submit">
+          <TextField name="reason" label="Reason" variant="outlined" />
+
+          <Button
+            variant="contained"
+            size="small"
+            color="warning"
+            disabled={isLoading}
+            type="submit"
+          >
             Submit
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </>

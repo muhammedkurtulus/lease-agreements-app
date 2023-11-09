@@ -11,7 +11,7 @@ export const TerminationButtons = ({
 }: {
   property: PropertyInfo;
 }) => {
-  const { setPropertyIndex, setOpenRequestTermination } = useUserContext();
+  const { setSelectedProperty, setOpenRequestTermination } = useUserContext();
 
   const {
     setResultFunction,
@@ -54,7 +54,7 @@ export const TerminationButtons = ({
     (property.isListed ? (
       <Button
         onClick={() => {
-          setPropertyIndex(property.propertyIndex);
+          setSelectedProperty(property);
           setOpenRequestTermination(true);
         }}
         variant="contained"

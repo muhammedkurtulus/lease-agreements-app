@@ -1,4 +1,10 @@
-import { PropertyInfo, PropertyType, cardClass, listClass } from "@/app/types";
+import {
+  buttonGroupClass,
+  cardClass,
+  listClass,
+  propertyTypeClass,
+} from "@/app/classes";
+import { PropertyInfo, PropertyType } from "@/app/types";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
 import { House, Storefront } from "@mui/icons-material";
@@ -8,7 +14,7 @@ import { zeroAddress } from "viem";
 import { useAccount, useContractRead } from "wagmi";
 
 export const Properties = () => {
-  const { setOpenStartLeaseForm, setPropertyIndex, setSelectedProperty } =
+  const { setOpenStartLeaseForm, setSelectedProperty, setOpenLeaseInfo } =
     useUserContext();
 
   const { data: properties } = useContractRead({
@@ -34,7 +40,7 @@ export const Properties = () => {
           if (property.isListed && !isBanned) {
             return (
               <div className={cardClass}>
-                <div className="flex">
+                <div className={propertyTypeClass}>
                   {property.propertyType === PropertyType.House ? (
                     <House />
                   ) : (
@@ -46,40 +52,50 @@ export const Properties = () => {
                     ? "Tenant"
                     : undefined}
                 </div>
-                <p>Property Address: {property.propertyAddress}</p>
-                <p>Property Owner Name: {property.ownerName}</p>
-                <p>Owner Address: {property.owner}</p>
-                <p>Index: {Number(property.propertyIndex)}</p>
 
-                {property.leaseInfo.isActive && (
-                  <Button
-                    onClick={() => {
-                      setSelectedProperty(property);
-                    }}
-                    variant="contained"
-                    size="small"
-                    color="secondary"
-                  >
-                    View Lease
-                  </Button>
-                )}
+                <div>
+                  <p>Property Address: {property.propertyAddress}</p>
+                  <p>Property Owner Name: {property.ownerName}</p>
+                  <p>Owner Address: {property.owner}</p>
+                  <p>Index: {Number(property.propertyIndex)}</p>
+                </div>
 
-                {!property.leaseInfo.isActive && property.owner !== address && (
-                  <Button
-                    onClick={() => {
-                      setPropertyIndex(property.propertyIndex);
-                      setOpenStartLeaseForm({
-                        opened: true,
-                        fromTenant: true,
-                      });
-                    }}
-                    variant="contained"
-                    size="small"
-                    disabled={property.leaseInfo.tenantAddress !== zeroAddress}
-                  >
-                    Start Lease
-                  </Button>
-                )}
+                <div className={buttonGroupClass}>
+                  {property.leaseInfo.isActive && (
+                    <Button
+                      onClick={() => {
+                        setSelectedProperty(property);
+                        setOpenLeaseInfo(true);
+                      }}
+                      variant="contained"
+                      size="small"
+                      color="secondary"
+                    >
+                      View Lease
+                    </Button>
+                  )}
+
+                  {!property.leaseInfo.isActive &&
+                    property.owner !== address && (
+                      <Button
+                        onClick={() => {
+                          setSelectedProperty(property);
+                          setOpenStartLeaseForm({
+                            opened: true,
+                            fromTenant: true,
+                          });
+                        }}
+                        variant="contained"
+                        size="small"
+                        disabled={
+                          property.leaseInfo.tenantAddress !== zeroAddress ||
+                          !address
+                        }
+                      >
+                        Start Lease
+                      </Button>
+                    )}
+                </div>
               </div>
             );
           }

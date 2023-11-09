@@ -1,12 +1,13 @@
+import { formClass } from "@/app/classes";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useEffect } from "react";
 import { useContractWrite } from "wagmi";
 
 export const SubmitComplaint = () => {
-  const { propertyIndex } = useUserContext();
+  const { selectedProperty } = useUserContext();
 
   const {
     setResultFunction,
@@ -47,18 +48,31 @@ export const SubmitComplaint = () => {
       <DialogTitle>Submit Complaint</DialogTitle>
       <DialogContent>
         <form
-          className="grid gap-y-5 text-black"
+          className={formClass}
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
             const description = formData.get("description") as string;
-            submitComplaint({ args: [propertyIndex!, description] });
+            submitComplaint({
+              args: [selectedProperty?.propertyIndex!, description],
+            });
           }}
         >
-          <input name="description" placeholder="Description" />
-          <button className="bg-white" disabled={isLoading} type="submit">
+          <TextField
+            name="description"
+            id="outlined-basic"
+            label="Description"
+            variant="outlined"
+          />
+          <Button
+            variant="contained"
+            size="small"
+            color="warning"
+            disabled={isLoading}
+            type="submit"
+          >
             Submit
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </>
