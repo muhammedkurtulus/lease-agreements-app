@@ -95,7 +95,7 @@ export const Profile = () => {
             (c) => c.whoAbout === property.owner && c.status === Status.confirm
           );
           return (
-            <div className={cardClass}>
+            <div className={cardClass} key={property.propertyIndex}>
               <div className={propertyTypeClass}>
                 {property.propertyType === PropertyType.House ? (
                   <House />

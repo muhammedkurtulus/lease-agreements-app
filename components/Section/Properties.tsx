@@ -39,7 +39,7 @@ export const Properties = () => {
           );
           if (property.isListed && !isBanned) {
             return (
-              <div className={cardClass}>
+              <div className={cardClass} key={property.propertyIndex}>
                 <div className={propertyTypeClass}>
                   {property.propertyType === PropertyType.House ? (
                     <House />

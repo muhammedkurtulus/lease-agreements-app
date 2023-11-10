@@ -63,7 +63,7 @@ export const LeaseInfo = () => {
 
   return (
     <>
-      <DialogTitle>Lease</DialogTitle>
+      <DialogTitle>Lease Info</DialogTitle>
       <DialogContent className="grid gap-3">
         <div>
           <p>Owner Name: {selectedProperty?.ownerName}</p>
@@ -71,9 +71,6 @@ export const LeaseInfo = () => {
           <p>Tenant Name: {selectedProperty?.leaseInfo.tenantName}</p>
           <p>Tenant Address: {selectedProperty?.leaseInfo.tenantAddress}</p>
           <p>Property Address: {selectedProperty?.propertyAddress}</p>
-          <p>Duration: {Number(selectedProperty?.leaseInfo.duration)}</p>
-          <p>Start Date: {Number(selectedProperty?.leaseInfo.startDate)}</p>
-          <p>End Date: {Number(selectedProperty?.leaseInfo.endDate)}</p>
           <p>Property Index: {Number(selectedProperty?.propertyIndex)}</p>
           <p>
             Property Type:
@@ -81,6 +78,15 @@ export const LeaseInfo = () => {
               ? " House"
               : " Store"}
           </p>
+          <p>Duration: {Number(selectedProperty?.leaseInfo.duration)} year</p>
+          <p>
+            {`Start Date: ${new Date(
+              Number(selectedProperty?.leaseInfo.startDate) * 1000
+            ).toLocaleString()} (UTC)`}
+          </p>
+          <p>{`End Date: ${new Date(
+            Number(selectedProperty?.leaseInfo.endDate) * 1000
+          ).toLocaleString()} (UTC)`}</p>
         </div>
 
         {selectedProperty?.leaseInfo.terminationRequester !== zeroAddress &&
