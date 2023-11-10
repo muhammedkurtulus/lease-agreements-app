@@ -16,15 +16,25 @@ import { contract } from "@/providers/WalletProvider";
 import { Button, Dialog } from "@mui/material";
 import { ConnectKitButton } from "connectkit";
 import { useEffect } from "react";
-import { useAccount, useContractRead, useWaitForTransaction } from "wagmi";
+import {
+  Address,
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import { sectionClass } from "./classes";
+import { privateKeyToAccount } from "viem/accounts";
+
+const ownerAccount = privateKeyToAccount(
+  `0x${process.env.NEXT_PUBLIC_CONTRACT_OWNER!}` as Address
+);
 
 export default function Home() {
   const {
     openPropertyForm,
     openComplaintForm,
     openStartLeaseForm,
-    selectedProperty,
     setOpenPropertyForm,
     setOpenComplaintForm,
     setOpenStartLeaseForm,
@@ -35,6 +45,13 @@ export default function Home() {
     openLeaseInfo,
     setOpenLeaseInfo,
   } = useUserContext();
+
+  const {
+    setResultFunction,
+    setErrorFunction,
+    setIsErrorFunction,
+    setLoadingFunction,
+  } = useContractContext();
 
   const { resultFunction } = useContractContext();
 
@@ -50,13 +67,53 @@ export default function Home() {
     functionName: "getAllComplaints",
   });
 
+  const { data: isManager, refetch } = useContractRead({
+    ...contract,
+    functionName: "isManager",
+    args: [address!],
+    enabled: Boolean(address),
+  });
+
   const { isLoading: isPending, isSuccess } = useWaitForTransaction({
     hash: resultFunction?.hash,
   });
 
+  const {
+    write: setManager,
+    data,
+    error,
+    isLoading,
+    isError,
+  } = useContractWrite({
+    ...contract,
+    functionName: "setManager",
+    account: ownerAccount,
+  });
+
   useEffect(() => {
-    getAllProperties();
-    getAllComplaints();
+    if (!data) return;
+    setResultFunction(data);
+  }, [data]);
+
+  useEffect(() => {
+    if (!error) return;
+    setErrorFunction(error);
+  }, [error]);
+
+  useEffect(() => {
+    setLoadingFunction(isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    setIsErrorFunction(isError);
+  }, [isError]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      getAllProperties();
+      getAllComplaints();
+      refetch();
+    }
 
     setOpenLeaseInfo(false);
     setOpenComplaintForm(false);
@@ -64,22 +121,42 @@ export default function Home() {
     setOpenRequestTermination(false);
     setOpenReviewComplaint(false);
     setOpenStartLeaseForm({ opened: false });
-  }, [isSuccess]);
+  }, [isSuccess, isPending]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-evenly px-3 md:px-20">
+      <TransactionInfo isPending={isPending} isSuccess={isSuccess} />
+
       <div className="w-full">
         Profile
         <div className={sectionClass}>
           <Profile />
-          <ConnectKitButton />
-        </div>
-      </div>
-
-      <div className="w-full">
-        Complaints
-        <div className={sectionClass}>
-          <Complaints />
+          <div className="grid items-center justify-items-center gap-2">
+            <ConnectKitButton />
+            {address &&
+              (isManager ? (
+                <p className="text-center text-blue-800">Manager</p>
+              ) : (
+                <>
+                  <Button
+                    onClick={() =>
+                      setManager({
+                        args: [address],
+                      })
+                    }
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    disabled={!address}
+                  >
+                    Be Manager
+                  </Button>
+                  <p className="text-center text-sm">
+                    You can be test manager for confirm complaints
+                  </p>
+                </>
+              ))}
+          </div>
         </div>
       </div>
 
@@ -101,7 +178,12 @@ export default function Home() {
         </div>
       </div>
 
-      <TransactionInfo isPending={isPending} isSuccess={isSuccess} />
+      <div className="w-full">
+        Complaints
+        <div className={sectionClass}>
+          <Complaints />
+        </div>
+      </div>
 
       <Dialog
         open={openPropertyForm}

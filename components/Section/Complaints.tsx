@@ -44,11 +44,13 @@ export const Complaints = () => {
           return (
             <div className={cardClass} key={complaint.complaintIndex}>
               <div className={propertyTypeClass}>
-                {complaint.status === Status.none
-                  ? "Not Reviewed"
-                  : complaint.status === Status.confirm
-                  ? "Confirmed"
-                  : "Rejected"}
+                {complaint.status === Status.none ? (
+                  <span >Not Reviewed</span>
+                ) : complaint.status === Status.confirm ? (
+                  <span className="text-green-700">Confirmed</span>
+                ) : (
+                  <span className="text-red-700">Rejected</span>
+                )}
               </div>
 
               <div>
@@ -56,7 +58,7 @@ export const Complaints = () => {
                 <p>Who About: {complaint.whoAbout}</p>
                 <p>Property Index: {Number(complaint.propertyIndex)}</p>
                 <p>Complaint Index: {Number(complaint.complaintIndex)}</p>
-                <p>Description: {complaint.description}</p>
+                <p className="text-orange-800">Description: {complaint.description}</p>
               </div>
 
               {!(
