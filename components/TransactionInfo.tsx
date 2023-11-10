@@ -14,9 +14,20 @@ export const TransactionInfo = ({
   return (
     <div className="sm:text-base text-xs">
       {loadingFunction && <div>Check wallet...</div>}
-      {isPending && <div>Transaction pending...</div>}
-      {isSuccess && <div>{`Transaction Hash: ${resultFunction?.hash}`}</div>}
-      {isErrorFunction && <div>{(errorFunction as BaseError)?.message}</div>}
+
+      {isPending && (
+        <div className="text-yellow-700">Transaction pending...</div>
+      )}
+
+      {isSuccess && (
+        <div className="text-blue-800">{`Last Transaction Hash: ${resultFunction?.hash}`}</div>
+      )}
+
+      {isErrorFunction && (
+        <div className="text-red-700">
+          {(errorFunction as BaseError)?.message}
+        </div>
+      )}
     </div>
   );
 };

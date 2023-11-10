@@ -5,7 +5,7 @@ import { Address, WagmiConfig } from "wagmi";
 import { ReactNode, useEffect, useState } from "react";
 import { getDefaultConfig } from "connectkit";
 import { createConfig } from "wagmi";
-import { localhost } from "wagmi/chains";
+import { localhost, polygonMumbai } from "wagmi/chains";
 import { Lease__factory } from "@/typechain-types";
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID!;
@@ -15,7 +15,7 @@ const config = createConfig(
     autoConnect: true,
     appName: "My wagmi + ConnectKit App",
     walletConnectProjectId,
-    chains: [localhost],
+    chains: [polygonMumbai, localhost],
   })
 );
 

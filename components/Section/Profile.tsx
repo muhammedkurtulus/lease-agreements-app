@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { zeroAddress } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { ListingStatusButtons } from "../ListingStatusButtons";
-import { PropertyInfo, PropertyType } from "@/app/types";
+import { PropertyInfo, PropertyType, Status } from "@/app/types";
 
 export const Profile = () => {
   const {
@@ -57,10 +57,12 @@ export const Profile = () => {
   });
 
   useEffect(() => {
+    if (!data) return;
     setResultFunction(data);
   }, [data]);
 
   useEffect(() => {
+    if (!error) return;
     setErrorFunction(error);
   }, [error]);
 
@@ -90,7 +92,7 @@ export const Profile = () => {
       <div className={listClass}>
         {relatedProperties.map((property: PropertyInfo) => {
           const isBanned = complaints?.some(
-            (c) => c.whoAbout === property.owner && c.confirmed
+            (c) => c.whoAbout === property.owner && c.status === Status.confirm
           );
           return (
             <div className={cardClass}>
@@ -104,13 +106,21 @@ export const Profile = () => {
                 {!property.isListed && (
                   <span className="text-yellow-800">(unlisted)</span>
                 )}
-                {isBanned && <span className="text-red-800">(banned)</span>}
               </div>
 
               <div>
+                <p>Index: {Number(property.propertyIndex)}</p>
                 <p>Property Address: {property.propertyAddress}</p>
                 <p>Owner Name: {property.ownerName}</p>
-                <p>Index: {Number(property.propertyIndex)}</p>
+                <p>Owner Address: {property.owner}</p>
+                {isBanned && <span className="text-red-800">(banned)</span>}
+                {!property.leaseInfo.isActive &&
+                  property.leaseInfo.initiatorAddress !== zeroAddress &&
+                  property.leaseInfo.initiatorAddress !== address && (
+                    <p className="text-yellow-800">
+                      Initiator Address: {property.leaseInfo.initiatorAddress}
+                    </p>
+                  )}
               </div>
 
               <div className={buttonGroupClass}>

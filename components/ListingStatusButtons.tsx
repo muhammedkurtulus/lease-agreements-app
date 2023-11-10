@@ -44,10 +44,12 @@ export const ListingStatusButtons = ({
   const { address } = useAccount();
 
   useEffect(() => {
+    if (!unlistData) return;
     setResultFunction(unlistData);
   }, [unlistData]);
 
   useEffect(() => {
+    if (!unlistError) return;
     setErrorFunction(unlistError);
   }, [unlistError]);
 
@@ -60,10 +62,12 @@ export const ListingStatusButtons = ({
   }, [unlistIsError]);
 
   useEffect(() => {
+    if (!listData) return;
     setResultFunction(listData);
   }, [listData]);
 
   useEffect(() => {
+    if (!listError) return;
     setErrorFunction(listError);
   }, [listError]);
 

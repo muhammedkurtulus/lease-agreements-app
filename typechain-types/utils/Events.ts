@@ -23,11 +23,48 @@ import type {
 export interface EventsInterface extends Interface {
   getEvent(
     nameOrSignatureOrTopic:
+      | "ComplaintConcluded"
       | "ComplaintReported"
       | "LeaseEnded"
       | "LeaseStarted"
-      | "TerminationRequested"
   ): EventFragment;
+}
+
+export namespace ComplaintConcludedEvent {
+  export type InputTuple = [
+    complainant: AddressLike,
+    whoAbout: AddressLike,
+    propertyIndex: BigNumberish,
+    propertyAddress: string,
+    description: string,
+    tenantAddress: AddressLike,
+    propertyOwner: AddressLike,
+    conclusion: string
+  ];
+  export type OutputTuple = [
+    complainant: string,
+    whoAbout: string,
+    propertyIndex: bigint,
+    propertyAddress: string,
+    description: string,
+    tenantAddress: string,
+    propertyOwner: string,
+    conclusion: string
+  ];
+  export interface OutputObject {
+    complainant: string;
+    whoAbout: string;
+    propertyIndex: bigint;
+    propertyAddress: string;
+    description: string;
+    tenantAddress: string;
+    propertyOwner: string;
+    conclusion: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace ComplaintReportedEvent {
@@ -147,37 +184,6 @@ export namespace LeaseStartedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace TerminationRequestedEvent {
-  export type InputTuple = [
-    requesterAddress: AddressLike,
-    propertyIndex: BigNumberish,
-    propertyAddress: string,
-    ownerName: string,
-    tenantName: string,
-    reason: string
-  ];
-  export type OutputTuple = [
-    requesterAddress: string,
-    propertyIndex: bigint,
-    propertyAddress: string,
-    ownerName: string,
-    tenantName: string,
-    reason: string
-  ];
-  export interface OutputObject {
-    requesterAddress: string;
-    propertyIndex: bigint;
-    propertyAddress: string;
-    ownerName: string;
-    tenantName: string;
-    reason: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export interface Events extends BaseContract {
   connect(runner?: ContractRunner | null): Events;
   waitForDeployment(): Promise<this>;
@@ -226,6 +232,13 @@ export interface Events extends BaseContract {
   ): T;
 
   getEvent(
+    key: "ComplaintConcluded"
+  ): TypedContractEvent<
+    ComplaintConcludedEvent.InputTuple,
+    ComplaintConcludedEvent.OutputTuple,
+    ComplaintConcludedEvent.OutputObject
+  >;
+  getEvent(
     key: "ComplaintReported"
   ): TypedContractEvent<
     ComplaintReportedEvent.InputTuple,
@@ -246,15 +259,19 @@ export interface Events extends BaseContract {
     LeaseStartedEvent.OutputTuple,
     LeaseStartedEvent.OutputObject
   >;
-  getEvent(
-    key: "TerminationRequested"
-  ): TypedContractEvent<
-    TerminationRequestedEvent.InputTuple,
-    TerminationRequestedEvent.OutputTuple,
-    TerminationRequestedEvent.OutputObject
-  >;
 
   filters: {
+    "ComplaintConcluded(address,address,uint256,string,string,address,address,string)": TypedContractEvent<
+      ComplaintConcludedEvent.InputTuple,
+      ComplaintConcludedEvent.OutputTuple,
+      ComplaintConcludedEvent.OutputObject
+    >;
+    ComplaintConcluded: TypedContractEvent<
+      ComplaintConcludedEvent.InputTuple,
+      ComplaintConcludedEvent.OutputTuple,
+      ComplaintConcludedEvent.OutputObject
+    >;
+
     "ComplaintReported(address,address,uint256,string,string,address,address)": TypedContractEvent<
       ComplaintReportedEvent.InputTuple,
       ComplaintReportedEvent.OutputTuple,
@@ -286,17 +303,6 @@ export interface Events extends BaseContract {
       LeaseStartedEvent.InputTuple,
       LeaseStartedEvent.OutputTuple,
       LeaseStartedEvent.OutputObject
-    >;
-
-    "TerminationRequested(address,uint256,string,string,string,string)": TypedContractEvent<
-      TerminationRequestedEvent.InputTuple,
-      TerminationRequestedEvent.OutputTuple,
-      TerminationRequestedEvent.OutputObject
-    >;
-    TerminationRequested: TypedContractEvent<
-      TerminationRequestedEvent.InputTuple,
-      TerminationRequestedEvent.OutputTuple,
-      TerminationRequestedEvent.OutputObject
     >;
   };
 }

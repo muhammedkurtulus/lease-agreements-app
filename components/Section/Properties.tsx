@@ -4,7 +4,7 @@ import {
   listClass,
   propertyTypeClass,
 } from "@/app/classes";
-import { PropertyInfo, PropertyType } from "@/app/types";
+import { PropertyInfo, PropertyType, Status } from "@/app/types";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
 import { House, Storefront } from "@mui/icons-material";
@@ -35,7 +35,7 @@ export const Properties = () => {
       <div className={listClass}>
         {properties.map((property: PropertyInfo) => {
           const isBanned = complaints?.some(
-            (c) => c.whoAbout === property.owner && c.confirmed
+            (c) => c.whoAbout === property.owner && c.status === Status.confirm
           );
           if (property.isListed && !isBanned) {
             return (
@@ -55,7 +55,7 @@ export const Properties = () => {
 
                 <div>
                   <p>Property Address: {property.propertyAddress}</p>
-                  <p>Property Owner Name: {property.ownerName}</p>
+                  <p>Owner Name: {property.ownerName}</p>
                   <p>Owner Address: {property.owner}</p>
                   <p>Index: {Number(property.propertyIndex)}</p>
                 </div>

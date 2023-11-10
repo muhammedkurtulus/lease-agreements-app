@@ -26,10 +26,12 @@ export const AddProperty = () => {
   });
 
   useEffect(() => {
+    if (!data) return;
     setResultFunction(data);
   }, [data]);
 
   useEffect(() => {
+    if (!error) return;
     setErrorFunction(error);
   }, [error]);
 

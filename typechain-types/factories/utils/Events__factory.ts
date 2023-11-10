@@ -57,6 +57,61 @@ const _abi = [
         name: "propertyOwner",
         type: "address",
       },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "conclusion",
+        type: "string",
+      },
+    ],
+    name: "ComplaintConcluded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "complainant",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "whoAbout",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "propertyIndex",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "propertyAddress",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "description",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "tenantAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "propertyOwner",
+        type: "address",
+      },
     ],
     name: "ComplaintReported",
     type: "event",
@@ -189,53 +244,10 @@ const _abi = [
     name: "LeaseStarted",
     type: "event",
   },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "requesterAddress",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "propertyIndex",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "propertyAddress",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "ownerName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "tenantName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "reason",
-        type: "string",
-      },
-    ],
-    name: "TerminationRequested",
-    type: "event",
-  },
 ] as const;
 
 const _bytecode =
-  "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212203f2516612c1d37e0293398ba4a6c572b6baaf52e985a29b9ea04def119f530ef64736f6c63430008130033";
+  "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220afb05b4335a54a3ad6ecc8965131773f87515649c14da04f92141d638e80cbff64736f6c63430008130033";
 
 type EventsConstructorParams =
   | [signer?: Signer]

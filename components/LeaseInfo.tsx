@@ -35,10 +35,12 @@ export const LeaseInfo = () => {
   });
 
   useEffect(() => {
+    if (!data) return;
     setResultFunction(data);
   }, [data]);
 
   useEffect(() => {
+    if (!error) return;
     setErrorFunction(error);
   }, [error]);
 
@@ -72,7 +74,7 @@ export const LeaseInfo = () => {
           <p>Duration: {Number(selectedProperty?.leaseInfo.duration)}</p>
           <p>Start Date: {Number(selectedProperty?.leaseInfo.startDate)}</p>
           <p>End Date: {Number(selectedProperty?.leaseInfo.endDate)}</p>
-          <p>Index: {Number(selectedProperty?.propertyIndex)}</p>
+          <p>Property Index: {Number(selectedProperty?.propertyIndex)}</p>
           <p>
             Property Type:
             {selectedProperty?.propertyType === PropertyType.House

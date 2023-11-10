@@ -4,11 +4,11 @@ import {
   listClass,
   propertyTypeClass,
 } from "@/app/classes";
-import { Complaint } from "@/app/types";
+import { Complaint, Status } from "@/app/types";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
 import { Button } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useContractRead } from "wagmi";
 
 export const Complaints = () => {
@@ -28,6 +28,14 @@ export const Complaints = () => {
     enabled: Boolean(address),
   });
 
+  useEffect(() => {
+    console.log("isManager", isManager);
+  }, [isManager]);
+
+  useEffect(() => {
+    console.log("complaints", complaints);
+  }, [complaints]);
+
   return (
     complaints &&
     complaints.length > 0 && (
@@ -36,11 +44,11 @@ export const Complaints = () => {
           return (
             <div className={cardClass} key={complaint.complaintIndex}>
               <div className={propertyTypeClass}>
-                {complaint.reviewer
-                  ? complaint.confirmed
-                    ? "Confirmed"
-                    : "Not Confirmed"
-                  : "Not Reviewed"}
+                {complaint.status === Status.none
+                  ? "Not Reviewed"
+                  : complaint.status === Status.confirm
+                  ? "Confirmed"
+                  : "Rejected"}
               </div>
 
               <div>
@@ -49,29 +57,29 @@ export const Complaints = () => {
                 <p>Property Index: {Number(complaint.propertyIndex)}</p>
                 <p>Complaint Index: {Number(complaint.complaintIndex)}</p>
                 <p>Description: {complaint.description}</p>
-                <p>Confirmed: {complaint.confirmed}</p>
               </div>
 
               {!(
                 complaint?.complainant === address ||
                 complaint?.whoAbout === address
-              ) && (
-                <div className={buttonGroupClass}>
-                  {isManager && (
-                    <Button
-                      onClick={() => {
-                        setSelectedComplaint(complaint);
-                        setOpenReviewComplaint(true);
-                      }}
-                      variant="contained"
-                      size="small"
-                      color="secondary"
-                    >
-                      Review
-                    </Button>
-                  )}
-                </div>
-              )}
+              ) &&
+                complaint.status === Status.none && (
+                  <div className={buttonGroupClass}>
+                    {isManager && (
+                      <Button
+                        onClick={() => {
+                          setSelectedComplaint(complaint);
+                          setOpenReviewComplaint(true);
+                        }}
+                        variant="contained"
+                        size="small"
+                        color="secondary"
+                      >
+                        Review
+                      </Button>
+                    )}
+                  </div>
+                )}
             </div>
           );
         })}

@@ -5,7 +5,7 @@ export enum PropertyType {
   Shop,
 }
 
-export enum ConfirmationType {
+export enum Status {
   none,
   confirm,
   reject,
@@ -18,7 +18,7 @@ export interface Complaint {
   complaintIndex: bigint;
   propertyIndex: bigint;
   description: string;
-  confirmed: ConfirmationType;
+  status: Status;
 }
 
 export interface LeaseInfo {

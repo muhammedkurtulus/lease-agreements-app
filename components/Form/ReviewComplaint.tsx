@@ -28,10 +28,12 @@ export const ReviewComplaint = () => {
   });
 
   useEffect(() => {
+    if (!data) return;
     setResultFunction(data);
   }, [data]);
 
   useEffect(() => {
+    if (!error) return;
     setErrorFunction(error);
   }, [error]);
 
