@@ -1,10 +1,16 @@
-import { formClass, inputClass } from "@/app/classes";
+import { ellipsisClass, formClass, inputClass } from "@/app/classes";
 import { PropertyType } from "@/app/types";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { useEffect } from "react";
-import { useContractWrite } from "wagmi";
+import { useAccount, useContractWrite } from "wagmi";
 
 export const AddProperty = () => {
   const {
@@ -24,6 +30,8 @@ export const AddProperty = () => {
     ...contract,
     functionName: "addProperty",
   });
+
+  const { address } = useAccount();
 
   useEffect(() => {
     if (!data) return;
@@ -69,14 +77,19 @@ export const AddProperty = () => {
             <option value={PropertyType.Shop}>Shop</option>
           </select>
 
-          <TextField
-            name="propertyAddress"
-            label="Property Address"
-            variant="outlined"
-          />
+          <Tooltip title={address}>
+            <p className={ellipsisClass}>Owner Address: {address}</p>
+          </Tooltip>
+
           <TextField
             name="propertyOwnerName"
             label="Property Owner Name"
+            variant="outlined"
+          />
+
+          <TextField
+            name="propertyAddress"
+            label="Property Address"
             variant="outlined"
           />
 
