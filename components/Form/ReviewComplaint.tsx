@@ -1,8 +1,12 @@
-import { buttonGroupClass } from "@/app/classes";
+import {
+  buttonGroupClass,
+  dialogContentClass,
+  ellipsisClass,
+} from "@/app/classes";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
-import { Button, DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, Tooltip } from "@mui/material";
 import { useEffect } from "react";
 import { useContractWrite } from "wagmi";
 
@@ -47,14 +51,30 @@ export const ReviewComplaint = () => {
 
   return (
     <>
-      <DialogTitle>Review Complaint</DialogTitle>
-      <DialogContent className="grid gap-3">
-        <div>
-          <p>Complainant Address: {selectedComplaint?.complainant}</p>
-          <p>Complained Address: {selectedComplaint?.whoAbout}</p>
+      <DialogTitle className="border-b-2">Review Complaint</DialogTitle>
+      <DialogContent className={dialogContentClass}>
+        <div className="overflow-hidden">
+          <Tooltip title={selectedComplaint?.complainant}>
+            <p className={ellipsisClass}>
+              Complainant Address: {selectedComplaint?.complainant}
+            </p>
+          </Tooltip>
+
+          <Tooltip title={selectedComplaint?.whoAbout}>
+            <p className={ellipsisClass}>
+              Complained Address: {selectedComplaint?.whoAbout}
+            </p>
+          </Tooltip>
+
           <p>Property Index: {Number(selectedComplaint?.propertyIndex)}</p>
+
           <p>Complaint Index: {Number(selectedComplaint?.complaintIndex)}</p>
-          <p>Description: {selectedComplaint?.description}</p>
+
+          <Tooltip title={selectedComplaint?.description}>
+            <p className={ellipsisClass}>
+              Description: {selectedComplaint?.description}
+            </p>
+          </Tooltip>
         </div>
 
         <div className={buttonGroupClass}>

@@ -1,6 +1,7 @@
 import {
   buttonGroupClass,
   cardClass,
+  ellipsisClass,
   listClass,
   propertyTypeClass,
 } from "@/app/classes";
@@ -8,7 +9,7 @@ import { PropertyInfo, PropertyType, Status } from "@/app/types";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
 import { House, Storefront } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useEffect } from "react";
 import { zeroAddress } from "viem";
 import { useAccount, useContractRead } from "wagmi";
@@ -53,10 +54,25 @@ export const Properties = () => {
                     : undefined}
                 </div>
 
-                <div>
-                  <p>Property Address: {property.propertyAddress}</p>
-                  <p>Owner Name: {property.ownerName}</p>
-                  <p>Owner Address: {property.owner}</p>
+                <div className="overflow-hidden">
+                  <Tooltip title={property.propertyAddress}>
+                    <p className={ellipsisClass}>
+                      Property Address: {property.propertyAddress}
+                    </p>
+                  </Tooltip>
+
+                  <Tooltip title={property.ownerName}>
+                    <p className={ellipsisClass}>
+                      Owner Name: {property.ownerName}
+                    </p>
+                  </Tooltip>
+
+                  <Tooltip title={property.owner}>
+                    <p className={ellipsisClass}>
+                      Owner Address: {property.owner}
+                    </p>
+                  </Tooltip>
+
                   <p>Index: {Number(property.propertyIndex)}</p>
                 </div>
 

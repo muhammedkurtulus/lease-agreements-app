@@ -1,10 +1,21 @@
 import { contract } from "@/providers/WalletProvider";
-import { Button, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useEffect } from "react";
 import { useContractContext } from "@/providers/ContractContextProvider";
-import { formClass, inputClass } from "@/app/classes";
+import {
+  dialogContentClass,
+  ellipsisClass,
+  formClass,
+  inputClass,
+} from "@/app/classes";
 
 export const StartLease = () => {
   const { selectedProperty, openStartLeaseForm } = useUserContext();
@@ -49,8 +60,8 @@ export const StartLease = () => {
 
   return (
     <>
-      <DialogTitle>Start Lease</DialogTitle>
-      <DialogContent>
+      <DialogTitle className="border-b-2">Start Lease</DialogTitle>
+      <DialogContent className={dialogContentClass}>
         <form
           className={formClass}
           onSubmit={(e) => {
@@ -73,12 +84,20 @@ export const StartLease = () => {
         >
           <p>Property Index: {Number(selectedProperty?.propertyIndex!)}</p>
 
-          <p>
-            <span>{`Owner Address: ${selectedProperty?.owner!}`}</span>
-            {selectedProperty?.owner! === address && (
-              <span className="text-yellow-500"> (you)</span>
-            )}
-          </p>
+          <Tooltip title={selectedProperty?.owner}>
+            <p className={ellipsisClass}>
+              {selectedProperty?.owner === address ? (
+                <>
+                  <span className="text-yellow-600">
+                    {`Owner Address (you): `}
+                  </span>
+                </>
+              ) : (
+                <span>{`Owner Address: `}</span>
+              )}
+              <span>{selectedProperty?.owner}</span>
+            </p>
+          </Tooltip>
 
           {!openStartLeaseForm.fromTenant ? (
             <TextField
@@ -87,10 +106,14 @@ export const StartLease = () => {
               variant="outlined"
             />
           ) : (
-            <p>
-              {`Tenant Address: ${address}`}
-              <span className="text-yellow-500"> (you)</span>
-            </p>
+            <Tooltip title={address}>
+              <p className={ellipsisClass}>
+                <span className="text-yellow-600">
+                  {`Tenant Address (you): `}
+                </span>
+                <span>{address}</span>
+              </p>
+            </Tooltip>
           )}
 
           <TextField name="tenantName" label="Tenant Name" variant="outlined" />

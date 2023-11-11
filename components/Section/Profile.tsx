@@ -3,6 +3,7 @@
 import {
   buttonGroupClass,
   cardClass,
+  ellipsisClass,
   listClass,
   propertyTypeClass,
 } from "@/app/classes";
@@ -10,7 +11,7 @@ import { useContractContext } from "@/providers/ContractContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { contract } from "@/providers/WalletProvider";
 import { House, Storefront } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useEffect } from "react";
 import { zeroAddress } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
@@ -75,8 +76,6 @@ export const Profile = () => {
   }, [isError]);
 
   useEffect(() => {
-    console.log("properties", properties);
-
     const _properties = properties?.filter(
       (property) =>
         property.owner === address ||
@@ -108,18 +107,37 @@ export const Profile = () => {
                 )}
               </div>
 
-              <div>
+              <div className="overflow-hidden">
                 <p>Index: {Number(property.propertyIndex)}</p>
-                <p>Property Address: {property.propertyAddress}</p>
-                <p>Owner Name: {property.ownerName}</p>
-                <p>Owner Address: {property.owner}</p>
+
+                <Tooltip title={property.propertyAddress}>
+                  <p className={ellipsisClass}>
+                    Property Address: {property.propertyAddress}
+                  </p>
+                </Tooltip>
+
+                <Tooltip title={property.ownerName}>
+                  <p className={ellipsisClass}>
+                    Owner Name: {property.ownerName}
+                  </p>
+                </Tooltip>
+
+                <Tooltip title={property.owner}>
+                  <p className={ellipsisClass}>
+                    Owner Address: {property.owner}
+                  </p>
+                </Tooltip>
+
                 {isBanned && <span className="text-red-800">(banned)</span>}
+
                 {!property.leaseInfo.isActive &&
                   property.leaseInfo.initiatorAddress !== zeroAddress &&
                   property.leaseInfo.initiatorAddress !== address && (
-                    <p className="text-yellow-800">
-                      Initiator Address: {property.leaseInfo.initiatorAddress}
-                    </p>
+                    <Tooltip title={property.leaseInfo.initiatorAddress}>
+                      <p className={ellipsisClass + " text-yellow-800"}>
+                        Initiator Address: {property.leaseInfo.initiatorAddress}
+                      </p>
+                    </Tooltip>
                   )}
               </div>
 

@@ -1,4 +1,4 @@
-import { Button, DialogContent, DialogTitle } from "@mui/material";
+import { Button, DialogContent, DialogTitle, Tooltip } from "@mui/material";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useContractContext } from "@/providers/ContractContextProvider";
 import { useAccount, useContractWrite } from "wagmi";
@@ -6,7 +6,12 @@ import { contract } from "@/providers/WalletProvider";
 import { useEffect, useState } from "react";
 import { zeroAddress } from "viem";
 import { PropertyType } from "@/app/types";
-import { buttonGroupClass, cardClass } from "@/app/classes";
+import {
+  buttonGroupClass,
+  cardClass,
+  dialogContentClass,
+  ellipsisClass,
+} from "@/app/classes";
 
 export const LeaseInfo = () => {
   const [isOwnerOrTenant, setIsOwnerOrTenant] = useState(false);
@@ -61,40 +66,91 @@ export const LeaseInfo = () => {
     );
   }, [address, selectedProperty]);
 
+  const formatUnixTime = (unixTimestamp: bigint | undefined): string => {
+    if (unixTimestamp === undefined) {
+      return "";
+    }
+
+    return new Date(Number(unixTimestamp) * 1000).toLocaleString();
+  };
+
   return (
     <>
-      <DialogTitle>Lease Info</DialogTitle>
-      <DialogContent className="grid gap-3">
-        <div>
-          <p>Owner Name: {selectedProperty?.ownerName}</p>
-          <p>Owner Address: {selectedProperty?.owner}</p>
-          <p>Tenant Name: {selectedProperty?.leaseInfo.tenantName}</p>
-          <p>Tenant Address: {selectedProperty?.leaseInfo.tenantAddress}</p>
-          <p>Property Address: {selectedProperty?.propertyAddress}</p>
+      <DialogTitle className="border-b-2">Lease Info</DialogTitle>
+      <DialogContent className={dialogContentClass}>
+        <div className="overflow-hidden">
+          <Tooltip title={selectedProperty?.ownerName}>
+            <p className={ellipsisClass}>
+              Owner Name: {selectedProperty?.ownerName}
+            </p>
+          </Tooltip>
+
+          <Tooltip title={selectedProperty?.owner}>
+            <p className={ellipsisClass}>
+              Owner Address: {selectedProperty?.owner}
+            </p>
+          </Tooltip>
+
+          <Tooltip title={selectedProperty?.leaseInfo.tenantName}>
+            <p className={ellipsisClass}>
+              Tenant Name: {selectedProperty?.leaseInfo.tenantName}
+            </p>
+          </Tooltip>
+
+          <Tooltip title={selectedProperty?.leaseInfo.tenantAddress}>
+            <p className={ellipsisClass}>
+              Tenant Address: {selectedProperty?.leaseInfo.tenantAddress}
+            </p>
+          </Tooltip>
+
+          <Tooltip title={selectedProperty?.propertyAddress}>
+            <p className={ellipsisClass}>
+              Property Address: {selectedProperty?.propertyAddress}
+            </p>
+          </Tooltip>
+
           <p>Property Index: {Number(selectedProperty?.propertyIndex)}</p>
+
           <p>
             Property Type:
             {selectedProperty?.propertyType === PropertyType.House
               ? " House"
               : " Store"}
           </p>
+
           <p>Duration: {Number(selectedProperty?.leaseInfo.duration)} year</p>
-          <p>
-            {`Start Date: ${new Date(
-              Number(selectedProperty?.leaseInfo.startDate) * 1000
-            ).toLocaleString()} (UTC)`}
-          </p>
-          <p>{`End Date: ${new Date(
-            Number(selectedProperty?.leaseInfo.endDate) * 1000
-          ).toLocaleString()} (UTC)`}</p>
+
+          <Tooltip
+            title={`${formatUnixTime(
+              selectedProperty?.leaseInfo.startDate
+            )} (UTC)`}
+          >
+            <p className={ellipsisClass}>
+              {`Start Date: ${formatUnixTime(
+                selectedProperty?.leaseInfo.startDate
+              )} (UTC)`}
+            </p>
+          </Tooltip>
+
+          <Tooltip
+            title={`${formatUnixTime(
+              selectedProperty?.leaseInfo.endDate
+            )} (UTC)`}
+          >
+            <p className={ellipsisClass}>{`End Date: ${formatUnixTime(
+              selectedProperty?.leaseInfo.endDate
+            )} (UTC)`}</p>
+          </Tooltip>
         </div>
 
         {selectedProperty?.leaseInfo.terminationRequester !== zeroAddress &&
           isOwnerOrTenant && (
-            <p className="text-yellow">
-              Termination Reason:{" "}
-              {selectedProperty?.leaseInfo.terminationReason}
-            </p>
+            <Tooltip title={selectedProperty?.leaseInfo.terminationReason}>
+              <p className={ellipsisClass + " text-yellow"}>
+                Termination Reason:
+                {selectedProperty?.leaseInfo.terminationReason}
+              </p>
+            </Tooltip>
           )}
 
         <div className={buttonGroupClass}>
